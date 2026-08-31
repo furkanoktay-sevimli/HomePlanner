@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Ev Planı Tasarımcısı - Floor Plan Designer</title>
 <meta name="description" content="Evinizin odalarını ölçüleriyle çizin, mobilya ve eşya yerleştirin. Kolay kullanımlı ev planı tasarım aracı.">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -148,6 +148,20 @@ input::placeholder { color: var(--text-muted); }
 select option { background: var(--bg-elevated); color: var(--text-primary); }
 input[type="color"] { padding: 2px 4px; height: 32px; cursor: pointer; }
 
+.lang-select {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  margin-right: 8px;
+  font-size: 12px;
+}
+.lang-select:hover { border-color: var(--accent); }
+
 .btn-add {
   width: 100%; margin-top: 8px; background: var(--accent-bg);
   border-color: var(--border-active); color: var(--accent); justify-content: center;
@@ -176,10 +190,13 @@ input[type="color"] { padding: 2px 4px; height: 32px; cursor: pointer; }
 .furn-item .furn-size { font-size: 10px; color: var(--text-muted); flex-shrink: 0; }
 
 /* ============ SELECTED PANEL ============ */
-.selected-panel { padding: 14px; }
+#selected-section { background: rgba(99,102,241,0.03); border-bottom: 2px solid var(--accent); }
+@keyframes highlightPanel { 0% { background: rgba(99,102,241,0.15); } 100% { background: rgba(99,102,241,0.03); } }
+.selected-panel { padding: 14px; animation: highlightPanel 1s ease; }
 .selected-panel .sel-title { font-size: 13px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
 .selected-panel .sel-title .sel-icon { font-size: 18px; }
 .sel-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.btn-confirm { width: 100%; margin-top: 8px; justify-content: center; font-weight: 600; }
 
 /* ============ STATUS BAR ============ */
 .status-item { display: flex; align-items: center; gap: 4px; }
@@ -242,15 +259,88 @@ input[type="color"] { padding: 2px 4px; height: 32px; cursor: pointer; }
   background: var(--measure); color: #fff; font-size: 9px; font-weight: 700;
   padding: 0 4px; margin-left: -2px;
 }
+
+/* ============ FAB CONTROLS ============ */
+.fab-container {
+  position: absolute; bottom: 16px; right: 16px;
+  display: flex; flex-direction: column; gap: 10px; z-index: 100;
+}
+.fab {
+  width: 48px; height: 48px; border-radius: 50%; border: none;
+  background: var(--bg-elevated); color: var(--text-primary);
+  font-size: 20px; box-shadow: var(--shadow-md); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s, background 0.2s;
+}
+.fab:active { transform: scale(0.92); }
+.fab-danger { color: var(--danger); }
+
+/* ============ SIGNATURE ============ */
+.powered-by {
+  position: absolute; bottom: 12px; left: 16px;
+  font-size: 11px; color: var(--text-muted); font-weight: 500;
+  pointer-events: none; user-select: none; z-index: 50;
+  background: rgba(255,255,255,0.7);
+  padding: 4px 8px; border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  backdrop-filter: blur(4px);
+}
+.dark-theme .powered-by { background: rgba(30,41,59,0.7); color: rgba(255,255,255,0.6); }
+.powered-by strong { color: var(--accent); }
+
+/* ============ RESPONSIVE (MOBILE) ============ */
+@media (max-width: 768px) {
+  #toolbar { flex-wrap: wrap; height: auto; padding: 8px; justify-content: center; }
+  .toolbar-brand-text { display: none; }
+  .toolbar-group .btn { padding: 12px 16px; font-size: 14px; }
+  .btn-icon { padding: 12px; font-size: 18px; }
+  .unit-toggle button { padding: 10px 14px; font-size: 13px; }
+  .mobile-only { display: inline-flex !important; }
+  .toolbar-right { width: 100%; justify-content: center; margin-top: 4px; gap: 8px; }
+  .toolbar-right .btn { flex: 1; padding: 10px; font-size: 13px; }
+  
+  #sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0; width: 85vw; max-width: 340px;
+    transform: translateX(-100%); transition: transform 0.3s ease;
+    z-index: 1000; box-shadow: var(--shadow-lg); background: var(--bg-primary);
+  }
+  #sidebar.sidebar-open { transform: translateX(0); }
+  .sidebar-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); z-index: 999;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+  }
+  .sidebar-overlay.visible { opacity: 1; pointer-events: auto; }
+  
+  input, select { font-size: 16px; padding: 10px; }
+  .furn-item { padding: 10px 12px; font-size: 14px; }
+  .btn-add { padding: 12px; font-size: 14px; }
+  
+  #statusbar { display: none; }
+  
+  #canvas-hint { display: none !important; }
+  #canvas-hint-mobile {
+    display: block !important;
+    position: absolute; bottom: 48px; left: 50%; transform: translateX(-50%);
+    background: var(--bg-glass); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 8px 16px; font-size: 12px;
+    color: var(--text-muted); backdrop-filter: blur(12px); pointer-events: none;
+    white-space: nowrap; z-index: 10; box-shadow: var(--shadow-md);
+  }
+  
+  .toast { bottom: 80px; right: 50%; transform: translateX(50%) translateY(20px); }
+  .toast.show { transform: translateX(50%) translateY(0); }
+}
 </style>
 </head>
 <body>
 <div id="app">
   <!-- ===== TOOLBAR ===== -->
   <div id="toolbar">
+    <button class="btn btn-icon mobile-only" id="btn-sidebar-toggle" onclick="toggleSidebar()" style="display: none;">☰</button>
     <div class="toolbar-brand">
       <span class="toolbar-brand-icon">🏠</span>
-      <span class="toolbar-brand-text">Ev Planı Tasarımcısı</span>
+      <span class="toolbar-brand-text" data-i18n="app_title">Ev Planı Tasarımcısı</span>
     </div>
     <div class="toolbar-divider"></div>
     <div class="toolbar-group">
@@ -259,13 +349,13 @@ input[type="color"] { padding: 2px 4px; height: 32px; cursor: pointer; }
     <div class="toolbar-divider"></div>
     <div class="toolbar-group">
       <div class="unit-toggle">
-        <button id="unit-m" class="active" onclick="setUnit('m')">Metre</button>
-        <button id="unit-cm" onclick="setUnit('cm')">Santimetre</button>
+        <button id="unit-m" class="active" onclick="setUnit('m')" data-i18n="unit_m">Metre</button>
+        <button id="unit-cm" onclick="setUnit('cm')" data-i18n="unit_cm">Santimetre</button>
       </div>
     </div>
     <div class="toolbar-divider"></div>
     <div class="toolbar-group">
-      <button class="btn btn-measure" id="btn-measure" onclick="toggleMeasureMode()" title="Ölçüm Aracı (M)">📏 Ölçüm</button>
+      <button class="btn btn-measure" id="btn-measure" onclick="toggleMeasureMode()" title="Ölçüm Aracı (M)" data-i18n="measure">📏 Ölçüm</button>
       <button class="btn btn-icon" onclick="clearMeasurements()" title="Ölçümleri Temizle" id="btn-clear-measure" style="display:none;">🧹</button>
       <span class="measure-count" id="measure-count" style="display:none;">0</span>
     </div>
@@ -277,48 +367,61 @@ input[type="color"] { padding: 2px 4px; height: 32px; cursor: pointer; }
       <button class="btn btn-icon" onclick="zoomReset()" title="Sıfırla">🔄</button>
     </div>
     <div class="toolbar-right">
-      <button class="btn btn-success" onclick="saveProject()" title="Projeyi Kaydet">💾 Kaydet</button>
-      <button class="btn" onclick="loadProject()" title="Proje Yükle">📂 Yükle</button>
-      <button class="btn btn-accent" onclick="exportPNG()" title="PNG olarak dışa aktar">🖼️ PNG</button>
+      <select id="lang-select" class="lang-select" onchange="changeLang(this.value)">
+        <option value="tr">🇹🇷 Türkçe</option>
+        <option value="en">🇬🇧 English</option>
+      </select>
+      <button class="btn btn-success" onclick="saveProject()" title="Projeyi Kaydet" data-i18n="save">💾 Kaydet</button>
+      <button class="btn" onclick="loadProject()" title="Proje Yükle" data-i18n="load">📂 Yükle</button>
+      <button class="btn btn-accent" onclick="exportPNG()" title="PNG olarak dışa aktar" data-i18n="export">🖼️ PNG</button>
     </div>
   </div>
 
   <div id="main">
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
     <!-- ===== SIDEBAR ===== -->
     <div id="sidebar">
+      <!-- SELECTED ITEM PANEL -->
+      <div class="sidebar-section" id="selected-section" style="display:none;">
+        <div class="sidebar-header" style="cursor:default;">
+          <span>🔧</span> <span data-i18n="selected_item">Seçili Eleman</span>
+        </div>
+        <div class="sidebar-body open selected-panel" id="selected-panel"></div>
+      </div>
+
       <!-- ROOM SECTION -->
       <div class="sidebar-section">
         <div class="sidebar-header" onclick="toggleSection(this)">
-          <span>🏠</span> Oda Ekle
+          <span>🏠</span> <span data-i18n="add_room">Oda Ekle</span>
           <span class="arrow open">▶</span>
         </div>
         <div class="sidebar-body open">
           <div class="form-row">
-            <label>Oda Adı</label>
+            <label data-i18n="room_name">Oda Adı</label>
             <input type="text" id="room-name" placeholder="ör: Salon" />
           </div>
           <div class="form-row">
-            <label>Oda Tipi</label>
+            <label data-i18n="room_type">Oda Tipi</label>
             <select id="room-type"></select>
           </div>
           <div class="form-row-inline">
             <div class="form-row">
-              <label>Genişlik (<span class="unit-display">m</span>)</label>
+              <label><span data-i18n="width">Genişlik</span> (<span class="unit-display">m</span>)</label>
               <input type="number" id="room-w" placeholder="5" min="0.1" step="0.1" />
             </div>
             <div class="form-row">
-              <label>Yükseklik (<span class="unit-display">m</span>)</label>
+              <label><span data-i18n="height">Yükseklik</span> (<span class="unit-display">m</span>)</label>
               <input type="number" id="room-h" placeholder="4" min="0.1" step="0.1" />
             </div>
           </div>
-          <button class="btn btn-add" onclick="addRoom()">➕ Oda Ekle</button>
+          <button class="btn btn-add" onclick="addRoom()" data-i18n="btn_add_room">➕ Oda Ekle</button>
         </div>
       </div>
 
       <!-- FURNITURE SECTION -->
       <div class="sidebar-section">
         <div class="sidebar-header" onclick="toggleSection(this)">
-          <span>🪑</span> Hazır Mobilya
+          <span>🪑</span> <span data-i18n="furniture">Hazır Mobilya</span>
           <span class="arrow open">▶</span>
         </div>
         <div class="sidebar-body open" id="furniture-list-container"></div>
@@ -327,53 +430,60 @@ input[type="color"] { padding: 2px 4px; height: 32px; cursor: pointer; }
       <!-- CUSTOM FURNITURE SECTION -->
       <div class="sidebar-section">
         <div class="sidebar-header" onclick="toggleSection(this)">
-          <span>✏️</span> Özel Eşya Çiz
+          <span>✏️</span> <span data-i18n="custom_furniture">Özel Eşya Çiz</span>
           <span class="arrow open">▶</span>
         </div>
         <div class="sidebar-body open">
           <div class="form-row">
-            <label>Eşya Adı</label>
+            <label data-i18n="item_name">Eşya Adı</label>
             <input type="text" id="custom-name" placeholder="ör: Puf koltuk" />
           </div>
           <div class="form-row-inline">
             <div class="form-row">
-              <label>Genişlik (<span class="unit-display">m</span>)</label>
+              <label><span data-i18n="width">Genişlik</span> (<span class="unit-display">m</span>)</label>
               <input type="number" id="custom-w" placeholder="1.0" min="0.05" step="0.05" />
             </div>
             <div class="form-row">
-              <label>Yükseklik (<span class="unit-display">m</span>)</label>
+              <label><span data-i18n="height">Yükseklik</span> (<span class="unit-display">m</span>)</label>
               <input type="number" id="custom-h" placeholder="1.0" min="0.05" step="0.05" />
             </div>
           </div>
           <div class="form-row">
-            <label>Renk</label>
+            <label data-i18n="color">Renk</label>
             <input type="color" id="custom-color" value="#6366f1" />
           </div>
-          <button class="btn btn-add" onclick="addCustomFurniture()">✏️ Eşya Çiz & Ekle</button>
+          <button class="btn btn-add" onclick="addCustomFurniture()" data-i18n="btn_add_custom">✏️ Eşya Çiz & Ekle</button>
         </div>
       </div>
 
-      <!-- SELECTED ITEM PANEL -->
-      <div class="sidebar-section" id="selected-section" style="display:none;">
-        <div class="sidebar-header" style="cursor:default;">
-          <span>🔧</span> Seçili Eleman
-        </div>
-        <div class="sidebar-body open selected-panel" id="selected-panel"></div>
-      </div>
 
-      <div class="empty-hint" id="sidebar-hint">
-        <span class="hint-icon">📐</span>
-        Yukarıdan oda ekleyerek<br>başlayın, sonra mobilya<br>yerleştirin.
+
+      <div class="empty-hint" id="sidebar-hint" data-i18n="empty_hint">
+        Start by adding a room<br>from above, then place<br>furniture.
       </div>
     </div>
 
     <!-- ===== CANVAS ===== -->
     <div id="canvas-container">
       <canvas id="canvas"></canvas>
-      <div class="canvas-hint visible" id="canvas-hint">
-        <kbd>Sol Tık</kbd> Seç/Taşı · <kbd>Sağ Tık</kbd> Kaydır · <kbd>Tekerlek</kbd> Zoom · <kbd>R</kbd> Döndür · <kbd>Del</kbd> Sil · <kbd>M</kbd> Ölçüm
+      <div class="canvas-hint visible" id="canvas-hint" data-i18n="canvas_hint">
+        <kbd>Left Click</kbd> Select/Move · <kbd>Right Click</kbd> Pan · <kbd>Wheel</kbd> Zoom · <kbd>R</kbd> Rotate · <kbd>Del</kbd> Delete · <kbd>M</kbd> Measure
       </div>
-      <div class="measure-hint" id="measure-hint">📏 Ölçüm modu — İki nokta tıklayarak mesafe ölçün · <kbd style="background:rgba(255,255,255,0.25);border:none;color:#fff;font-size:10px;padding:1px 5px;border-radius:3px;">ESC</kbd> çıkış</div>
+      <div class="canvas-hint-mobile" id="canvas-hint-mobile" style="display: none;" data-i18n="canvas_hint_mob">
+        👆 Tap: Select · ✋ Swipe: Pan · 🤏 Pinch: Zoom
+      </div>
+      <div class="measure-hint" id="measure-hint" data-i18n="measure_hint">📏 Measure mode — Click two points to measure distance · <kbd style="background:rgba(255,255,255,0.25);border:none;color:#fff;font-size:10px;padding:1px 5px;border-radius:3px;">ESC</kbd> exit</div>
+      <div class="fab-container" id="fab-container" style="display: none;">
+        <button class="fab" id="fab-lock" onclick="toggleLockSelected()" title="Kilitle/Aç">🔒</button>
+        <button class="fab" onclick="rotateSelected()" title="Döndür">🔄</button>
+        <button class="fab fab-danger" onclick="deleteSelected()" title="Sil">🗑️</button>
+        <button class="fab" onclick="duplicateSelected()" title="Kopyala">📋</button>
+      </div>
+      
+      <!-- Signature -->
+      <div class="powered-by" id="powered-by">
+        ⚡ Powered by <strong>FurkanOktaySevimli</strong>
+      </div>
     </div>
   </div>
 
@@ -396,6 +506,80 @@ input[type="color"] { padding: 2px 4px; height: 32px; cursor: pointer; }
 
 <script>
 /* ================================================================
+   I18N
+   ================================================================ */
+const I18N = {
+  tr: {
+    app_title: 'Ev Planı Tasarımcısı', unit_m: 'Metre', unit_cm: 'Santimetre', measure: '📏 Ölçüm', save: '💾 Kaydet', load: '📂 Yükle', export: '🖼️ PNG',
+    add_room: 'Oda Ekle', room_name: 'Oda Adı', room_type: 'Oda Tipi', width: 'Genişlik', height: 'Yükseklik', btn_add_room: '➕ Oda Ekle',
+    furniture: 'Hazır Mobilya', custom_furniture: 'Özel Eşya Çiz', item_name: 'Eşya Adı', color: 'Renk', btn_add_custom: '✏️ Eşya Çiz & Ekle',
+    selected_item: 'Seçili Eleman', empty_hint: 'Yukarıdan oda ekleyerek<br>başlayın, sonra mobilya<br>yerleştirin.',
+    canvas_hint: '<kbd>Sol Tık</kbd> Seç/Taşı · <kbd>Sağ Tık</kbd> Kaydır · <kbd>Tekerlek</kbd> Zoom · <kbd>R</kbd> Döndür · <kbd>Del</kbd> Sil · <kbd>M</kbd> Ölçüm',
+    canvas_hint_mob: '👆 Dokun: Seç · ✋ Kaydır · 🤏 Kıstır: Zoom', measure_hint: '📏 Ölçüm modu — İki nokta tıklayarak mesafe ölçün · <kbd style="background:rgba(255,255,255,0.25);border:none;color:#fff;font-size:10px;padding:1px 5px;border-radius:3px;">ESC</kbd> çıkış',
+    rt_living: 'Salon', rt_bed: 'Yatak Odası', rt_kitchen: 'Mutfak', rt_bath: 'Banyo', rt_office: 'Ofis', rt_hall: 'Koridor',
+    cat_seating: 'Oturma', cat_tables: 'Masalar', cat_beds: 'Yataklar', cat_storage: 'Depolama', cat_kitchen: 'Mutfak', cat_bath: 'Banyo', cat_build: 'Yapı',
+    f_single_sofa: 'Tekli Koltuk', f_double_sofa: 'Çiftli Koltuk', f_l_sofa: 'L Koltuk', f_tv_unit: 'TV Ünitesi',
+    f_dining: 'Yemek Masası', f_work_desk: 'Çalışma Masası', f_coffee: 'Orta Sehpa', f_double_bed: 'Çift Yatak', f_single_bed: 'Tek Yatak', f_nightstand: 'Komodin',
+    f_wardrobe: 'Gardırop', f_bookcase: 'Kitaplık', f_counter: 'Mutfak Tezgahı', f_fridge: 'Buzdolabı', f_oven: 'Ocak/Fırın', f_toilet: 'Klozet', f_sink: 'Lavabo', f_shower: 'Duşakabin',
+    f_door: 'Kapı', f_window: 'Pencere',
+    status_zoom: 'Zoom: ', status_pos: 'Pozisyon: ', status_sel: 'Seçili: ', status_none: 'Yok', status_counts: 'Oda: %r · Eşya: %f',
+    sel_measurement: 'Ölçüm', sel_distance: 'Mesafe', sel_name: 'İsim', sel_rot: 'Döndürme',
+    btn_rotate: '🔄 Döndür', btn_delete: '🗑️ Sil', btn_dup: '📋 Kopyala', btn_done: '✅ Bitti / Onayla', btn_close: '✅ Kapat', btn_lock: '🔒 Kilitle', btn_unlock: '🔓 Kilidi Aç',
+    toast_added: ' eklendi', toast_deleted: '🗑️ Silindi', toast_rotated: '🔄 Döndürüldü', toast_locked: '🔒 Kilitlendi', toast_unlocked: '🔓 Kilit Açıldı',
+    err_rot_locked: 'Kilitli eleman döndürülemez', err_del_locked: 'Kilitli eleman silinemez', err_rot_furn: 'Sadece mobilyalar döndürülebilir',
+    toast_dup: '📋 Kopyalandı', toast_saved: '💾 Proje kaydedildi', toast_loaded: '📂 Proje yüklendi', toast_err_load: '⚠️ Dosya okunamadı: ',
+    toast_err_export: '⚠️ Dışa aktarılacak bir şey yok', toast_exported: '🖼️ PNG dışa aktarıldı', toast_err_size: '⚠️ Geçerli genişlik ve yükseklik girin',
+    toast_no_undo: 'Geri alınacak işlem yok', toast_undo: '↩️ Geri alındı', toast_no_measure: 'Temizlenecek ölçüm yok', toast_measure_cleared: '🧹 Ölçümler temizlendi'
+  },
+  en: {
+    app_title: 'Home Floor Planner', unit_m: 'Meter', unit_cm: 'Centimeter', measure: '📏 Measure', save: '💾 Save', load: '📂 Load', export: '🖼️ PNG',
+    add_room: 'Add Room', room_name: 'Room Name', room_type: 'Room Type', width: 'Width', height: 'Height', btn_add_room: '➕ Add Room',
+    furniture: 'Library', custom_furniture: 'Custom Item', item_name: 'Item Name', color: 'Color', btn_add_custom: '✏️ Draw & Add',
+    selected_item: 'Selected Item', empty_hint: 'Start by adding a room<br>from above, then place<br>furniture.',
+    canvas_hint: '<kbd>Left Click</kbd> Select/Move · <kbd>Right Click</kbd> Pan · <kbd>Wheel</kbd> Zoom · <kbd>R</kbd> Rotate · <kbd>Del</kbd> Delete · <kbd>M</kbd> Measure',
+    canvas_hint_mob: '👆 Tap: Select · ✋ Swipe: Pan · 🤏 Pinch: Zoom', measure_hint: '📏 Measure mode — Click two points to measure distance · <kbd style="background:rgba(255,255,255,0.25);border:none;color:#fff;font-size:10px;padding:1px 5px;border-radius:3px;">ESC</kbd> exit',
+    rt_living: 'Living Room', rt_bed: 'Bedroom', rt_kitchen: 'Kitchen', rt_bath: 'Bathroom', rt_office: 'Office', rt_hall: 'Hallway',
+    cat_seating: 'Seating', cat_tables: 'Tables', cat_beds: 'Beds', cat_storage: 'Storage', cat_kitchen: 'Kitchen', cat_bath: 'Bathroom', cat_build: 'Build',
+    f_single_sofa: 'Armchair', f_double_sofa: 'Sofa', f_l_sofa: 'L-Sofa', f_tv_unit: 'TV Unit',
+    f_dining: 'Dining Table', f_work_desk: 'Work Desk', f_coffee: 'Coffee Table', f_double_bed: 'Double Bed', f_single_bed: 'Single Bed', f_nightstand: 'Nightstand',
+    f_wardrobe: 'Wardrobe', f_bookcase: 'Bookcase', f_counter: 'Counter', f_fridge: 'Fridge', f_oven: 'Oven', f_toilet: 'Toilet', f_sink: 'Sink', f_shower: 'Shower',
+    f_door: 'Door', f_window: 'Window',
+    status_zoom: 'Zoom: ', status_pos: 'Pos: ', status_sel: 'Selected: ', status_none: 'None', status_counts: 'Room: %r · Item: %f',
+    sel_measurement: 'Measurement', sel_distance: 'Distance', sel_name: 'Name', sel_rot: 'Rotation',
+    btn_rotate: '🔄 Rotate', btn_delete: '🗑️ Delete', btn_dup: '📋 Duplicate', btn_done: '✅ Done', btn_close: '✅ Close', btn_lock: '🔒 Lock', btn_unlock: '🔓 Unlock',
+    toast_added: ' added', toast_deleted: '🗑️ Deleted', toast_rotated: '🔄 Rotated', toast_locked: '🔒 Locked', toast_unlocked: '🔓 Unlocked',
+    err_rot_locked: 'Locked item cannot be rotated', err_del_locked: 'Locked item cannot be deleted', err_rot_furn: 'Only furniture can be rotated',
+    toast_dup: '📋 Duplicated', toast_saved: '💾 Project saved', toast_loaded: '📂 Project loaded', toast_err_load: '⚠️ Could not read file: ',
+    toast_err_export: '⚠️ Nothing to export', toast_exported: '🖼️ PNG exported', toast_err_size: '⚠️ Enter valid width and height',
+    toast_no_undo: 'Nothing to undo', toast_undo: '↩️ Undone', toast_no_measure: 'No measurements to clear', toast_measure_cleared: '🧹 Measurements cleared'
+  }
+};
+function t(key) { return I18N[S.lang||'tr'][key] || key; }
+
+function applyLang() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.innerHTML = t(el.dataset.i18n);
+  });
+  
+  ROOM_TYPES.forEach(r => r.name = t(r.i18n));
+  FURN_CATS.forEach(c => c.name = t(c.i18n));
+  FURN_LIB.forEach(f => f.name = t(f.i18n));
+  
+  const sel = document.getElementById('lang-select');
+  if(sel) sel.value = S.lang || 'tr';
+  
+  // Re-translate library and selects
+  buildRoomTypeSelect();
+  buildFurnitureList();
+  updateSelectedPanel();
+  updateStatusCounts();
+}
+
+function changeLang(lang) {
+  S.lang = lang;
+  applyLang();
+}
+/* ================================================================
    CONFIG
    ================================================================ */
 const PPM_BASE = 50;
@@ -406,56 +590,56 @@ const MAX_ZOOM = 6;
 const WALL_PX = 3;
 
 const ROOM_TYPES = [
-  { id:'salon',   name:'Salon',         fill:'rgba(99,102,241,0.09)',  stroke:'#6366f1', icon:'🛋️' },
-  { id:'yatak',   name:'Yatak Odası',   fill:'rgba(168,85,247,0.09)', stroke:'#9333ea', icon:'🛏️' },
-  { id:'mutfak',  name:'Mutfak',        fill:'rgba(22,163,74,0.09)',  stroke:'#16a34a', icon:'🍳' },
-  { id:'banyo',   name:'Banyo',         fill:'rgba(6,182,212,0.09)',  stroke:'#0891b2', icon:'🚿' },
-  { id:'cocuk',   name:'Çocuk Odası',   fill:'rgba(234,179,8,0.09)', stroke:'#ca8a04', icon:'🧸' },
-  { id:'calisma', name:'Çalışma Odası', fill:'rgba(234,88,12,0.09)', stroke:'#ea580c', icon:'💼' },
-  { id:'koridor', name:'Koridor/Hol',   fill:'rgba(0,0,0,0.03)',      stroke:'#78716c', icon:'🚶' },
-  { id:'balkon',  name:'Balkon',        fill:'rgba(22,163,74,0.07)', stroke:'#15803d', icon:'🌿' },
-  { id:'ozel',    name:'Özel',          fill:'rgba(219,39,119,0.09)',stroke:'#db2777', icon:'✨' },
+  { id:'salon',   i18n:'rt_living', name:'Salon',         fill:'rgba(99,102,241,0.09)',  stroke:'#6366f1', icon:'🛋️' },
+  { id:'yatak',   i18n:'rt_bed',    name:'Yatak Odası',   fill:'rgba(168,85,247,0.09)', stroke:'#9333ea', icon:'🛏️' },
+  { id:'mutfak',  i18n:'rt_kitchen',name:'Mutfak',        fill:'rgba(22,163,74,0.09)',  stroke:'#16a34a', icon:'🍳' },
+  { id:'banyo',   i18n:'rt_bath',   name:'Banyo',         fill:'rgba(6,182,212,0.09)',  stroke:'#0891b2', icon:'🚿' },
+  { id:'cocuk',   i18n:'rt_living', name:'Çocuk Odası',   fill:'rgba(234,179,8,0.09)', stroke:'#ca8a04', icon:'🧸' },
+  { id:'calisma', i18n:'rt_office', name:'Çalışma Odası', fill:'rgba(234,88,12,0.09)', stroke:'#ea580c', icon:'💼' },
+  { id:'koridor', i18n:'rt_hall',   name:'Koridor/Hol',   fill:'rgba(0,0,0,0.03)',      stroke:'#78716c', icon:'🚶' },
+  { id:'balkon',  i18n:'rt_living', name:'Balkon',        fill:'rgba(22,163,74,0.07)', stroke:'#15803d', icon:'🌿' },
+  { id:'ozel',    i18n:'rt_living', name:'Özel',          fill:'rgba(219,39,119,0.09)',stroke:'#db2777', icon:'✨' },
 ];
 
 const FURN_CATS = [
-  { id:'bedroom',   name:'Yatak Odası',    icon:'🛏️' },
-  { id:'living',    name:'Oturma Odası',    icon:'🛋️' },
-  { id:'kitchen',   name:'Mutfak',          icon:'🍳' },
-  { id:'bathroom',  name:'Banyo',           icon:'🚿' },
-  { id:'office',    name:'Ofis',            icon:'💼' },
-  { id:'structure', name:'Yapı Elemanları', icon:'🏗️' },
+  { id:'bedroom',   i18n:'cat_beds',    name:'Yatak Odası',    icon:'🛏️' },
+  { id:'living',    i18n:'cat_seating', name:'Oturma Odası',    icon:'🛋️' },
+  { id:'kitchen',   i18n:'cat_kitchen', name:'Mutfak',          icon:'🍳' },
+  { id:'bathroom',  i18n:'cat_bath',    name:'Banyo',           icon:'🚿' },
+  { id:'office',    i18n:'cat_seating', name:'Ofis',            icon:'💼' },
+  { id:'structure', i18n:'cat_build',   name:'Yapı Elemanları', icon:'🏗️' },
 ];
 
 const FURN_LIB = [
-  { id:'single_bed',   name:'Tek Yatak',       w:0.90, h:2.00, icon:'🛏️', cat:'bedroom',   color:'#7c3aed' },
-  { id:'double_bed',   name:'Çift Yatak',      w:1.60, h:2.00, icon:'🛏️', cat:'bedroom',   color:'#6d28d9' },
-  { id:'wardrobe',     name:'Gardırop',        w:1.50, h:0.60, icon:'🚪', cat:'bedroom',   color:'#8b5cf6' },
-  { id:'nightstand',   name:'Komodin',         w:0.50, h:0.40, icon:'🗄️', cat:'bedroom',   color:'#a78bfa' },
-  { id:'dresser',      name:'Şifonyer',        w:1.00, h:0.50, icon:'🗄️', cat:'bedroom',   color:'#7c3aed' },
-  { id:'sofa2',        name:"2'li Koltuk",     w:1.50, h:0.85, icon:'🛋️', cat:'living',    color:'#2563eb' },
-  { id:'sofa3',        name:"3'lü Koltuk",     w:2.10, h:0.85, icon:'🛋️', cat:'living',    color:'#1d4ed8' },
-  { id:'armchair',     name:'Tekli Koltuk',    w:0.80, h:0.80, icon:'🪑', cat:'living',    color:'#3b82f6' },
-  { id:'coffee_table', name:'Sehpa',           w:1.00, h:0.55, icon:'☕', cat:'living',    color:'#60a5fa' },
-  { id:'tv_unit',      name:'TV Ünitesi',      w:1.60, h:0.45, icon:'📺', cat:'living',    color:'#2563eb' },
-  { id:'bookshelf',    name:'Kitaplık',        w:1.20, h:0.35, icon:'📚', cat:'living',    color:'#3b82f6' },
-  { id:'fridge',       name:'Buzdolabı',       w:0.70, h:0.70, icon:'❄️', cat:'kitchen',   color:'#059669' },
-  { id:'stove',        name:'Ocak/Fırın',      w:0.60, h:0.60, icon:'🔥', cat:'kitchen',   color:'#dc2626' },
-  { id:'counter',      name:'Tezgah',          w:1.20, h:0.60, icon:'🍽️', cat:'kitchen',   color:'#16a34a' },
-  { id:'sink_k',       name:'Evye',            w:0.60, h:0.50, icon:'🚰', cat:'kitchen',   color:'#0891b2' },
-  { id:'dishwasher',   name:'Bulaşık Mak.',    w:0.60, h:0.60, icon:'🫧', cat:'kitchen',   color:'#06b6d4' },
-  { id:'dining_table', name:'Yemek Masası',    w:1.40, h:0.90, icon:'🍽️', cat:'kitchen',   color:'#65a30d' },
-  { id:'dining_chair', name:'Sandalye',        w:0.45, h:0.45, icon:'🪑', cat:'kitchen',   color:'#84cc16' },
-  { id:'bathtub',      name:'Küvet',           w:1.70, h:0.75, icon:'🛁', cat:'bathroom',  color:'#0e7490' },
-  { id:'shower',       name:'Duşakabin',       w:0.90, h:0.90, icon:'🚿', cat:'bathroom',  color:'#06b6d4' },
-  { id:'toilet',       name:'Tuvalet',         w:0.40, h:0.70, icon:'🚽', cat:'bathroom',  color:'#22d3ee' },
-  { id:'sink_b',       name:'Lavabo',          w:0.55, h:0.45, icon:'🪥', cat:'bathroom',  color:'#67e8f9' },
-  { id:'washer',       name:'Çamaşır Mak.',    w:0.60, h:0.60, icon:'🫧', cat:'bathroom',  color:'#0891b2' },
-  { id:'desk',         name:'Çalışma Masası',  w:1.20, h:0.60, icon:'🖥️', cat:'office',    color:'#ea580c' },
-  { id:'office_chair', name:'Ofis Sandalyesi', w:0.55, h:0.55, icon:'🪑', cat:'office',    color:'#f97316' },
-  { id:'filing',       name:'Dosya Dolabı',    w:0.45, h:0.60, icon:'🗄️', cat:'office',    color:'#fb923c' },
-  { id:'door',         name:'Kapı (90cm)',     w:0.90, h:0.10, icon:'🚪', cat:'structure', color:'#78716c' },
-  { id:'window_s',     name:'Pencere (1m)',    w:1.00, h:0.10, icon:'🪟', cat:'structure', color:'#0ea5e9' },
-  { id:'window_l',     name:'Pencere (1.5m)',  w:1.50, h:0.10, icon:'🪟', cat:'structure', color:'#0ea5e9' },
+  { id:'single_bed',   i18n:'f_single_bed', name:'Tek Yatak',       w:0.90, h:2.00, icon:'🛏️', cat:'bedroom',   color:'#7c3aed' },
+  { id:'double_bed',   i18n:'f_double_bed', name:'Çift Yatak',      w:1.60, h:2.00, icon:'🛏️', cat:'bedroom',   color:'#6d28d9' },
+  { id:'wardrobe',     i18n:'f_wardrobe',   name:'Gardırop',        w:1.50, h:0.60, icon:'🚪', cat:'bedroom',   color:'#8b5cf6' },
+  { id:'nightstand',   i18n:'f_nightstand', name:'Komodin',         w:0.50, h:0.40, icon:'🗄️', cat:'bedroom',   color:'#a78bfa' },
+  { id:'dresser',      i18n:'f_wardrobe',   name:'Şifonyer',        w:1.00, h:0.50, icon:'🗄️', cat:'bedroom',   color:'#7c3aed' },
+  { id:'sofa2',        i18n:'f_double_sofa',name:"2'li Koltuk",     w:1.50, h:0.85, icon:'🛋️', cat:'living',    color:'#2563eb' },
+  { id:'sofa3',        i18n:'f_double_sofa',name:"3'lü Koltuk",     w:2.10, h:0.85, icon:'🛋️', cat:'living',    color:'#1d4ed8' },
+  { id:'armchair',     i18n:'f_single_sofa',name:'Tekli Koltuk',    w:0.80, h:0.80, icon:'🪑', cat:'living',    color:'#3b82f6' },
+  { id:'coffee_table', i18n:'f_coffee',     name:'Sehpa',           w:1.00, h:0.55, icon:'☕', cat:'living',    color:'#60a5fa' },
+  { id:'tv_unit',      i18n:'f_tv_unit',    name:'TV Ünitesi',      w:1.60, h:0.45, icon:'📺', cat:'living',    color:'#2563eb' },
+  { id:'bookshelf',    i18n:'f_bookcase',   name:'Kitaplık',        w:1.20, h:0.35, icon:'📚', cat:'living',    color:'#3b82f6' },
+  { id:'fridge',       i18n:'f_fridge',     name:'Buzdolabı',       w:0.70, h:0.70, icon:'❄️', cat:'kitchen',   color:'#059669' },
+  { id:'stove',        i18n:'f_oven',       name:'Ocak/Fırın',      w:0.60, h:0.60, icon:'🔥', cat:'kitchen',   color:'#dc2626' },
+  { id:'counter',      i18n:'f_counter',    name:'Tezgah',          w:1.20, h:0.60, icon:'🍽️', cat:'kitchen',   color:'#16a34a' },
+  { id:'sink_k',       i18n:'f_sink',       name:'Evye',            w:0.60, h:0.50, icon:'🚰', cat:'kitchen',   color:'#0891b2' },
+  { id:'dishwasher',   i18n:'f_oven',       name:'Bulaşık Mak.',    w:0.60, h:0.60, icon:'🫧', cat:'kitchen',   color:'#06b6d4' },
+  { id:'dining_table', i18n:'f_dining',     name:'Yemek Masası',    w:1.40, h:0.90, icon:'🍽️', cat:'kitchen',   color:'#65a30d' },
+  { id:'dining_chair', i18n:'f_single_sofa',name:'Sandalye',        w:0.45, h:0.45, icon:'🪑', cat:'kitchen',   color:'#84cc16' },
+  { id:'bathtub',      i18n:'f_shower',     name:'Küvet',           w:1.70, h:0.75, icon:'🛁', cat:'bathroom',  color:'#0e7490' },
+  { id:'shower',       i18n:'f_shower',     name:'Duşakabin',       w:0.90, h:0.90, icon:'🚿', cat:'bathroom',  color:'#06b6d4' },
+  { id:'toilet',       i18n:'f_toilet',     name:'Tuvalet',         w:0.40, h:0.70, icon:'🚽', cat:'bathroom',  color:'#22d3ee' },
+  { id:'sink_b',       i18n:'f_sink',       name:'Lavabo',          w:0.55, h:0.45, icon:'🪥', cat:'bathroom',  color:'#67e8f9' },
+  { id:'washer',       i18n:'f_oven',       name:'Çamaşır Mak.',    w:0.60, h:0.60, icon:'🫧', cat:'bathroom',  color:'#0891b2' },
+  { id:'desk',         i18n:'f_work_desk',  name:'Çalışma Masası',  w:1.20, h:0.60, icon:'🖥️', cat:'office',    color:'#ea580c' },
+  { id:'office_chair', i18n:'f_single_sofa',name:'Ofis Sandalyesi', w:0.55, h:0.55, icon:'🪑', cat:'office',    color:'#f97316' },
+  { id:'filing',       i18n:'f_wardrobe',   name:'Dosya Dolabı',    w:0.45, h:0.60, icon:'🗄️', cat:'office',    color:'#fb923c' },
+  { id:'door',         i18n:'f_door',       name:'Kapı (90cm)',     w:0.90, h:0.10, icon:'🚪', cat:'structure', color:'#78716c' },
+  { id:'window_s',     i18n:'f_window',     name:'Pencere (1m)',    w:1.00, h:0.10, icon:'🪟', cat:'structure', color:'#0ea5e9' },
+  { id:'window_l',     i18n:'f_window',     name:'Pencere (1.5m)',  w:1.50, h:0.10, icon:'🪟', cat:'structure', color:'#0ea5e9' },
 ];
 
 /* ================================================================
@@ -463,7 +647,7 @@ const FURN_LIB = [
    ================================================================ */
 const S = {
   rooms: [], furniture: [],
-  unit: 'm', zoom: 1, offsetX: 100, offsetY: 80, nextId: 1,
+  unit: 'm', zoom: 1, offsetX: 100, offsetY: 80, nextId: 1, lang: 'tr',
   selectedId: null, selectedType: null,
   isDragging: false, isPanning: false,
   dragOX: 0, dragOY: 0,
@@ -703,6 +887,15 @@ function drawSelection() {
   const item = getSelectedItem();
   if (!item) return;
   const s = sc();
+  
+  if (S.selectedType === 'measurement') {
+    const mx = w2sX((item.x1 + item.x2)/2);
+    const my = w2sY((item.y1 + item.y2)/2);
+    ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 2; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.arc(mx, my, 20, 0, Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+    return;
+  }
+
   let x,y,w,h;
   if (S.selectedType==='room') {
     x=w2sX(item.x); y=w2sY(item.y); w=item.w*s; h=item.h*s;
@@ -711,14 +904,26 @@ function drawSelection() {
     const dw=isR?item.h:item.w, dh=isR?item.w:item.h;
     x=w2sX(item.x); y=w2sY(item.y); w=dw*s; h=dh*s;
   }
-  ctx.strokeStyle = '#6366f1';
+  
+  const selColor = item.locked ? '#ef4444' : '#6366f1';
+  
+  ctx.strokeStyle = selColor;
   ctx.lineWidth = 2;
   ctx.setLineDash([6,4]);
   ctx.strokeRect(x-3,y-3,w+6,h+6);
   ctx.setLineDash([]);
   const hs=5;
-  ctx.fillStyle = '#6366f1';
+  ctx.fillStyle = selColor;
   [[x-3,y-3],[x+w+3-hs,y-3],[x-3,y+h+3-hs],[x+w+3-hs,y+h+3-hs]].forEach(([cx,cy]) => ctx.fillRect(cx,cy,hs,hs));
+
+  if (S.selectedType === 'furniture' && !item.locked) {
+    const cx = x + w/2, cy = y - 24;
+    ctx.strokeStyle = selColor; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(cx, y-3); ctx.lineTo(cx, cy+10); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, 12, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 16px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('↻', cx, cy-1);
+  }
 }
 
 /* ================================================================
@@ -911,12 +1116,21 @@ function hexToRGBA(hex, a) {
    HIT TESTING
    ================================================================ */
 function hitTest(wx, wy) {
+  // 1. Check measurements (click on the center pill)
+  for (let i=S.measurements.length-1; i>=0; i--) {
+    const m = S.measurements[i];
+    const mx = (m.x1 + m.x2) / 2;
+    const my = (m.y1 + m.y2) / 2;
+    if (Math.hypot(wx - mx, wy - my) * sc() < 25) return {type: 'measurement', id: m.id, item: m};
+  }
+  // 2. Check furniture
   for (let i=S.furniture.length-1; i>=0; i--) {
     const f=S.furniture[i];
     const isR=(f.angle===90||f.angle===270);
     const fw=isR?f.h:f.w, fh=isR?f.w:f.h;
     if (wx>=f.x && wx<=f.x+fw && wy>=f.y && wy<=f.y+fh) return {type:'furniture', id:f.id, item:f};
   }
+  // 3. Check rooms
   for (let i=S.rooms.length-1; i>=0; i--) {
     const r=S.rooms[i];
     if (wx>=r.x && wx<=r.x+r.w && wy>=r.y && wy<=r.y+r.h) return {type:'room', id:r.id, item:r};
@@ -927,6 +1141,7 @@ function getSelectedItem() {
   if (!S.selectedId) return null;
   if (S.selectedType==='room') return S.rooms.find(r=>r.id===S.selectedId);
   if (S.selectedType==='furniture') return S.furniture.find(f=>f.id===S.selectedId);
+  if (S.selectedType==='measurement') return S.measurements.find(m=>m.id===S.selectedId);
   return null;
 }
 
@@ -966,6 +1181,19 @@ function onMouseDown(e) {
 
   if (e.button !== 0) return;
 
+  if (S.selectedId && S.selectedType === 'furniture') {
+    const item = getSelectedItem();
+    const s = sc();
+    const isR = (item.angle === 90 || item.angle === 270);
+    const dw = isR ? item.h : item.w;
+    const bx = w2sX(item.x), by = w2sY(item.y), bw = dw*s;
+    const cx = bx + bw/2, cy = by - 24;
+    if (Math.hypot(pos.x - cx, pos.y - cy) < 20) {
+      rotateSelected();
+      return;
+    }
+  }
+
   // MEASURE MODE
   if (S.measureMode) {
     const wx = S.snapPoint ? S.snapPoint.x : s2wX(pos.x);
@@ -992,10 +1220,15 @@ function onMouseDown(e) {
   const hit = hitTest(wx, wy);
   if (hit) {
     S.selectedId = hit.id; S.selectedType = hit.type;
-    S.isDragging = true;
-    S.dragOX = wx - hit.item.x; S.dragOY = wy - hit.item.y;
-    canvas.style.cursor = 'grabbing';
-    pushUndo();
+    if (hit.item.locked) {
+      S.isDragging = false;
+      canvas.style.cursor = 'not-allowed';
+    } else {
+      S.isDragging = true;
+      S.dragOX = wx - hit.item.x; S.dragOY = wy - hit.item.y;
+      canvas.style.cursor = 'grabbing';
+      pushUndo();
+    }
   } else {
     S.selectedId = null; S.selectedType = null;
   }
@@ -1028,14 +1261,15 @@ function onMouseMove(e) {
 
   // hover
   const hit = hitTest(wx, wy);
-  canvas.style.cursor = hit ? 'grab' : 'default';
+  canvas.style.cursor = hit ? (hit.item.locked ? 'not-allowed' : 'grab') : 'default';
   S.hoverItem = hit;
   updateStatusPos();
 }
 
 function onMouseUp(e) {
-  if (S.isPanning) { S.isPanning = false; canvas.style.cursor = S.measureMode ? 'crosshair' : (S.hoverItem?'grab':'default'); }
-  if (S.isDragging) { S.isDragging = false; canvas.style.cursor = S.measureMode ? 'crosshair' : (S.hoverItem?'grab':'default'); updateSelectedPanel(); }
+  const cur = S.measureMode ? 'crosshair' : (S.hoverItem ? (S.hoverItem.item.locked ? 'not-allowed' : 'grab') : 'default');
+  if (S.isPanning) { S.isPanning = false; canvas.style.cursor = cur; }
+  if (S.isDragging) { S.isDragging = false; canvas.style.cursor = cur; updateSelectedPanel(); }
 }
 
 function onWheel(e) {
@@ -1073,7 +1307,7 @@ function onContextMenu(e) { e.preventDefault(); }
 function addRoom() {
   const w=fromInput(document.getElementById('room-w').value);
   const h=fromInput(document.getElementById('room-h').value);
-  if(!w||!h){showToast('⚠️ Geçerli genişlik ve yükseklik girin');return;}
+  if(!w||!h){showToast(t('toast_err_size'));return;}
   const typeId=document.getElementById('room-type').value;
   const rt=ROOM_TYPES.find(t=>t.id===typeId);
   const name=document.getElementById('room-name').value.trim()||rt.name;
@@ -1086,8 +1320,9 @@ function addRoom() {
   document.getElementById('room-w').value='';
   document.getElementById('room-h').value='';
   updateSelectedPanel(); updateStatusCounts(); render();
-  showToast('🏠 '+name+' eklendi');
+  showToast('🏠 '+name+t('toast_added'));
   document.getElementById('sidebar-hint').style.display='none';
+  document.getElementById('sidebar').scrollTop = 0;
 }
 
 function addFurnitureFromLib(libId) {
@@ -1100,15 +1335,16 @@ function addFurnitureFromLib(libId) {
   S.selectedId=furn.id; S.selectedType='furniture';
   if(S.measureMode) toggleMeasureMode();
   updateSelectedPanel(); updateStatusCounts(); render();
-  showToast(def.icon+' '+def.name+' eklendi');
+  showToast(def.icon+' '+def.name+t('toast_added'));
   document.getElementById('sidebar-hint').style.display='none';
+  document.getElementById('sidebar').scrollTop = 0;
 }
 
 function addCustomFurniture() {
   const w=fromInput(document.getElementById('custom-w').value);
   const h=fromInput(document.getElementById('custom-h').value);
-  if(!w||!h){showToast('⚠️ Geçerli genişlik ve yükseklik girin');return;}
-  const name=document.getElementById('custom-name').value.trim()||'Özel Eşya';
+  if(!w||!h){showToast(t('toast_err_size'));return;}
+  const name=document.getElementById('custom-name').value.trim()||t('custom_furniture');
   const color=document.getElementById('custom-color').value;
   pushUndo();
   const cx=s2wX(cW()/2)-w/2, cy=s2wY(cH()/2)-h/2;
@@ -1122,25 +1358,39 @@ function addCustomFurniture() {
   updateSelectedPanel(); updateStatusCounts(); render();
   showToast('✏️ '+name+' eklendi');
   document.getElementById('sidebar-hint').style.display='none';
+  document.getElementById('sidebar').scrollTop = 0;
 }
 
 function deleteSelected() {
   if(!S.selectedId) return;
+  const item = getSelectedItem();
+  if (item && item.locked) { showToast(t('err_del_locked')); return; }
   pushUndo();
   if(S.selectedType==='room') S.rooms=S.rooms.filter(r=>r.id!==S.selectedId);
-  else S.furniture=S.furniture.filter(f=>f.id!==S.selectedId);
+  else if(S.selectedType==='furniture') S.furniture=S.furniture.filter(f=>f.id!==S.selectedId);
+  else if(S.selectedType==='measurement') { S.measurements=S.measurements.filter(m=>m.id!==S.selectedId); updateMeasureUI(); }
   S.selectedId=null; S.selectedType=null;
   updateSelectedPanel(); updateStatusCounts(); render();
-  showToast('🗑️ Silindi');
+  showToast(t('toast_deleted'));
 }
 
 function rotateSelected() {
   const item=getSelectedItem();
-  if(!item||S.selectedType!=='furniture'){showToast('Sadece mobilyalar döndürülebilir');return;}
+  if(!item||S.selectedType!=='furniture'){showToast(t('err_rot_furn'));return;}
+  if(item.locked){showToast(t('err_rot_locked'));return;}
   pushUndo();
   item.angle=((item.angle||0)+90)%360;
   render(); updateSelectedPanel();
-  showToast('🔄 Döndürüldü ('+item.angle+'°)');
+  showToast(t('toast_rotated')+' ('+item.angle+'°)');
+}
+
+function toggleLockSelected() {
+  const item = getSelectedItem();
+  if(!item) return;
+  pushUndo();
+  item.locked = !item.locked;
+  updateSelectedPanel(); render();
+  showToast(item.locked ? t('toast_locked') : t('toast_unlocked'));
 }
 
 /* ================================================================
@@ -1150,24 +1400,58 @@ function updateSelectedPanel() {
   const section=document.getElementById('selected-section');
   const panel=document.getElementById('selected-panel');
   const item=getSelectedItem();
-  if(!item){section.style.display='none';document.getElementById('status-selected').textContent='Seçili: Yok';return;}
+  document.getElementById('fab-container').style.display = item ? 'flex' : 'none';
+  if(item) document.getElementById('fab-lock').textContent = item.locked ? '🔓' : '🔒';
+  
+  if(!item){
+    section.style.display='none';
+    document.getElementById('status-selected').textContent=t('status_sel')+t('status_none');
+    return;
+  }
   section.style.display='';
-  document.getElementById('status-selected').textContent='Seçili: '+item.name;
+  document.getElementById('status-selected').textContent=t('status_sel')+(item.name||t('sel_measurement')) + (item.locked?' 🔒':'');
+  
+  if (S.selectedType === 'measurement') {
+    const dist = Math.hypot(item.x2 - item.x1, item.y2 - item.y1);
+    let h = `<div class="sel-title"><span class="sel-icon">📏</span> ${t('sel_measurement')}</div>`;
+    h += `<div class="form-row"><label>${t('sel_distance')}</label><input type="text" value="${fmtUnit(dist)}" readonly style="background:transparent;border:none;padding:0;font-weight:600;"/></div>`;
+    h += `<div class="sel-actions">`;
+    h += `<button class="btn btn-danger" onclick="deleteSelected()">🗑️ ${t('btn_delete').replace('🗑️ ','')}</button></div>`;
+    h += `<button class="btn btn-success btn-confirm" onclick="confirmSelection()">✅ ${t('btn_close').replace('✅ ','')}</button>`;
+    panel.innerHTML = h;
+    return;
+  }
+
   const isRoom=S.selectedType==='room';
   const rt=isRoom?ROOM_TYPES.find(t=>t.id===item.typeId):null;
   const icon=isRoom?(rt?.icon||'🏠'):(item.icon||'📦');
-  let h=`<div class="sel-title"><span class="sel-icon">${icon}</span> ${item.name}</div>`;
-  h+=`<div class="form-row"><label>İsim</label><input type="text" value="${item.name}" onchange="updateItemProp('name',this.value)"/></div>`;
-  h+=`<div class="form-row-inline"><div class="form-row"><label>Genişlik (${unitLabel()})</label><input type="number" value="${toDisplay(item.w)}" min="1" step="${S.unit==='cm'?1:0.05}" onchange="updateItemProp('w',this.value)"/></div>`;
-  h+=`<div class="form-row"><label>Yükseklik (${unitLabel()})</label><input type="number" value="${toDisplay(item.h)}" min="1" step="${S.unit==='cm'?1:0.05}" onchange="updateItemProp('h',this.value)"/></div></div>`;
-  h+=`<div class="form-row-inline"><div class="form-row"><label>X (${unitLabel()})</label><input type="number" value="${toDisplay(item.x)}" step="${S.unit==='cm'?1:0.05}" onchange="updateItemProp('x',this.value)"/></div>`;
-  h+=`<div class="form-row"><label>Y (${unitLabel()})</label><input type="number" value="${toDisplay(item.y)}" step="${S.unit==='cm'?1:0.05}" onchange="updateItemProp('y',this.value)"/></div></div>`;
-  if(!isRoom) h+=`<div class="form-row"><label>Döndürme: ${item.angle||0}°</label></div>`;
+  const dis = item.locked ? 'disabled' : '';
+  
+  let h=`<div class="sel-title"><span class="sel-icon">${icon}</span> ${item.name} ${item.locked?'🔒':''}</div>`;
+  h+=`<div class="form-row"><label>${t('sel_name')}</label><input type="text" value="${item.name}" onchange="updateItemProp('name',this.value)" ${dis}/></div>`;
+  h+=`<div class="form-row-inline"><div class="form-row"><label>${t('width')} (${unitLabel()})</label><input type="number" value="${toDisplay(item.w)}" min="1" step="${S.unit==='cm'?1:0.05}" onchange="updateItemProp('w',this.value)" ${dis}/></div>`;
+  h+=`<div class="form-row"><label>${t('height')} (${unitLabel()})</label><input type="number" value="${toDisplay(item.h)}" min="1" step="${S.unit==='cm'?1:0.05}" onchange="updateItemProp('h',this.value)" ${dis}/></div></div>`;
+  h+=`<div class="form-row-inline"><div class="form-row"><label>X (${unitLabel()})</label><input type="number" value="${toDisplay(item.x)}" step="${S.unit==='cm'?1:0.05}" onchange="updateItemProp('x',this.value)" ${dis}/></div>`;
+  h+=`<div class="form-row"><label>Y (${unitLabel()})</label><input type="number" value="${toDisplay(item.y)}" step="${S.unit==='cm'?1:0.05}" onchange="updateItemProp('y',this.value)" ${dis}/></div></div>`;
+  if(!isRoom) h+=`<div class="form-row"><label>${t('sel_rot')}: ${item.angle||0}°</label></div>`;
   h+=`<div class="sel-actions">`;
-  if(!isRoom) h+=`<button class="btn btn-accent" onclick="rotateSelected()">🔄 Döndür</button>`;
-  h+=`<button class="btn btn-danger" onclick="deleteSelected()">🗑️ Sil</button>`;
-  h+=`<button class="btn" onclick="duplicateSelected()">📋 Kopyala</button></div>`;
+  h+=`<button class="btn" onclick="toggleLockSelected()">${item.locked?'🔓 '+t('btn_unlock').replace('🔓 ',''):'🔒 '+t('btn_lock').replace('🔒 ','')}</button>`;
+  if(!isRoom) h+=`<button class="btn btn-accent" onclick="rotateSelected()" ${dis}>${t('btn_rotate')}</button>`;
+  h+=`<button class="btn btn-danger" onclick="deleteSelected()" ${dis}>${t('btn_delete')}</button>`;
+  h+=`<button class="btn" onclick="duplicateSelected()">${t('btn_dup')}</button></div>`;
+  h+=`<button class="btn btn-success btn-confirm" onclick="confirmSelection()">${t('btn_done')}</button>`;
   panel.innerHTML = h;
+}
+
+function confirmSelection() {
+  if (isMobile) {
+    closeSidebar();
+  } else {
+    S.selectedId = null;
+    S.selectedType = null;
+    updateSelectedPanel();
+    render();
+  }
 }
 
 function updateItemProp(prop, val) {
@@ -1186,7 +1470,7 @@ function duplicateSelected() {
   if(S.selectedType==='room') S.rooms.push(clone); else S.furniture.push(clone);
   S.selectedId=clone.id;
   updateSelectedPanel(); updateStatusCounts(); render();
-  showToast('📋 Kopyalandı');
+  showToast(t('toast_dup'));
 }
 
 /* ================================================================
@@ -1198,7 +1482,7 @@ function saveProject() {
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a'); a.href=url; a.download='ev-plani_'+new Date().toISOString().slice(0,10)+'.json'; a.click();
   URL.revokeObjectURL(url);
-  showToast('💾 Proje kaydedildi');
+  showToast(t('toast_saved'));
 }
 
 function loadProject() { document.getElementById('file-input').click(); }
@@ -1216,8 +1500,8 @@ function handleFileLoad(e) {
       if(d.unit) setUnit(d.unit);
       S.selectedId=null; S.selectedType=null;
       updateSelectedPanel(); updateStatusCounts(); updateMeasureUI(); updateZoomUI(); render();
-      showToast('📂 Proje yüklendi');
-    }catch(err){showToast('⚠️ Dosya okunamadı: '+err.message);}
+      showToast(t('toast_loaded'));
+    }catch(err){showToast(t('toast_err_load')+err.message);}
   };
   reader.readAsText(f); e.target.value='';
 }
@@ -1311,14 +1595,14 @@ function exportPNG() {
    ================================================================ */
 function zoomIn(){const c=cW()/2,d=cH()/2;const wx=s2wX(c),wy=s2wY(d);S.zoom=Math.min(MAX_ZOOM,S.zoom*1.25);S.offsetX=c-wx*sc();S.offsetY=d-wy*sc();updateZoomUI();render();}
 function zoomOut(){const c=cW()/2,d=cH()/2;const wx=s2wX(c),wy=s2wY(d);S.zoom=Math.max(MIN_ZOOM,S.zoom/1.25);S.offsetX=c-wx*sc();S.offsetY=d-wy*sc();updateZoomUI();render();}
-function zoomReset(){S.zoom=1;S.offsetX=100;S.offsetY=80;updateZoomUI();render();}
-function updateZoomUI(){const p=Math.round(S.zoom*100)+'%';document.getElementById('zoom-label').textContent=p;document.getElementById('status-zoom').textContent='Zoom: '+p;}
+function zoomReset(){S.zoom=1;S.offsetX=isMobile?20:100;S.offsetY=isMobile?20:80;updateZoomUI();render();}
+function updateZoomUI(){const p=Math.round(S.zoom*100)+'%';document.getElementById('zoom-label').textContent=p;document.getElementById('status-zoom').textContent=t('status_zoom')+p;}
 
 /* ================================================================
    STATUS
    ================================================================ */
-function updateStatusPos(){document.getElementById('status-pos').textContent='Pozisyon: '+fmtUnit(S.mouseWorldX)+', '+fmtUnit(S.mouseWorldY);}
-function updateStatusCounts(){document.getElementById('status-count').textContent='Oda: '+S.rooms.length+' · Eşya: '+S.furniture.length;}
+function updateStatusPos(){document.getElementById('status-pos').textContent=t('status_pos')+fmtUnit(S.mouseWorldX)+', '+fmtUnit(S.mouseWorldY);}
+function updateStatusCounts(){document.getElementById('status-count').textContent=t('status_counts').replace('%r',S.rooms.length).replace('%f',S.furniture.length);}
 
 /* ================================================================
    SIDEBAR UI
@@ -1360,18 +1644,172 @@ function autoSave(){try{localStorage.setItem('floor_planner_v2',JSON.stringify({
 function autoLoad(){try{const r=localStorage.getItem('floor_planner_v2');if(!r)return;const d=JSON.parse(r);if(d.rooms)S.rooms=d.rooms;if(d.furniture)S.furniture=d.furniture;if(d.measurements)S.measurements=d.measurements;if(d.zoom)S.zoom=d.zoom;if(d.offsetX!==undefined)S.offsetX=d.offsetX;if(d.offsetY!==undefined)S.offsetY=d.offsetY;if(d.nextId)S.nextId=d.nextId;if(d.unit)setUnit(d.unit);updateZoomUI();updateStatusCounts();updateMeasureUI();}catch(e){}}
 
 /* ================================================================
+   MOBILE TOUCH
+   ================================================================ */
+const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('sidebar-open');
+  document.getElementById('sidebar-overlay').classList.toggle('visible');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('sidebar-open');
+  document.getElementById('sidebar-overlay').classList.remove('visible');
+}
+
+let touchStartTime = 0;
+let touchStartPos = {x:0, y:0};
+let initialPinchDist = null;
+let initialPinchZoom = null;
+
+function getTouchDist(touches) {
+  return Math.hypot(touches[0].clientX - touches[1].clientX, touches[0].clientY - touches[1].clientY);
+}
+function getTouchCenter(touches) {
+  const r = canvas.getBoundingClientRect();
+  return {
+    x: (touches[0].clientX + touches[1].clientX)/2 - r.left,
+    y: (touches[0].clientY + touches[1].clientY)/2 - r.top
+  };
+}
+
+function onTouchStart(e) {
+  if(e.touches.length === 1) {
+    if(e.target === canvas) e.preventDefault();
+    const r = canvas.getBoundingClientRect();
+    const x = e.touches[0].clientX - r.left;
+    const y = e.touches[0].clientY - r.top;
+    touchStartPos = {x, y};
+    touchStartTime = Date.now();
+
+    if (S.selectedId && S.selectedType === 'furniture') {
+      const item = getSelectedItem();
+      const s = sc();
+      const isR = (item.angle === 90 || item.angle === 270);
+      const dw = isR ? item.h : item.w;
+      const bx = w2sX(item.x), by = w2sY(item.y), bw = dw*s;
+      const cx = bx + bw/2, cy = by - 24;
+      if (Math.hypot(x - cx, y - cy) < 20) {
+        rotateSelected();
+        touchStartTime = Date.now(); // prevent tap deselection
+        return;
+      }
+    }
+    
+    if (S.measureMode) {
+      const wx = S.snapPoint ? S.snapPoint.x : s2wX(x);
+      const wy = S.snapPoint ? S.snapPoint.y : s2wY(y);
+      if (!S.measureStart) {
+        S.measureStart = {x: wx, y: wy};
+      } else {
+        pushUndo();
+        S.measurements.push({ id: genId(), x1: S.measureStart.x, y1: S.measureStart.y, x2: wx, y2: wy });
+        S.measureStart = null;
+        updateMeasureUI();
+      }
+      render(); return;
+    }
+
+    const wx = s2wX(x), wy = s2wY(y);
+    const hit = hitTest(wx, wy);
+    
+    S.isPanning = true;
+    S.panStartX = x; S.panStartY = y;
+    S.panStartOX = S.offsetX; S.panStartOY = S.offsetY;
+    
+    if (hit) {
+      S.selectedId = hit.id; S.selectedType = hit.type;
+      if (hit.item.locked) {
+        S.isDragging = false;
+        // Keep panning enabled when clicking locked items on mobile, or maybe not?
+        // Let's allow panning if it's locked.
+      } else {
+        S.isDragging = true;
+        S.dragOX = wx - hit.item.x; S.dragOY = wy - hit.item.y;
+        S.isPanning = false;
+        pushUndo();
+      }
+    } else {
+      S.selectedId = null; S.selectedType = null;
+    }
+    updateSelectedPanel(); render();
+  }
+  else if (e.touches.length === 2) {
+    if(e.target === canvas) e.preventDefault();
+    initialPinchDist = getTouchDist(e.touches);
+    initialPinchZoom = S.zoom;
+    S.isPanning = false; S.isDragging = false;
+  }
+}
+
+function onTouchMove(e) {
+  if(e.target === canvas) e.preventDefault();
+  const r = canvas.getBoundingClientRect();
+  if (e.touches.length === 1) {
+    const x = e.touches[0].clientX - r.left;
+    const y = e.touches[0].clientY - r.top;
+    const wx = s2wX(x), wy = s2wY(y);
+    S.mouseWorldX = wx; S.mouseWorldY = wy;
+    
+    if (S.isPanning) {
+      S.offsetX = S.panStartOX + (x - S.panStartX);
+      S.offsetY = S.panStartOY + (y - S.panStartY);
+      render(); return;
+    }
+    
+    if (S.isDragging && S.selectedId) {
+      const item = getSelectedItem();
+      if (item) { item.x = snap(wx-S.dragOX); item.y = snap(wy-S.dragOY); render(); }
+      return;
+    }
+    
+    if (S.measureMode) {
+      S.snapPoint = findSnapPoint(wx, wy);
+      render(); return;
+    }
+  }
+  else if (e.touches.length === 2) {
+    const dist = getTouchDist(e.touches);
+    const center = getTouchCenter(e.touches);
+    const wxB = s2wX(center.x), wyB = s2wY(center.y);
+    const ratio = dist / initialPinchDist;
+    S.zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, initialPinchZoom * ratio));
+    S.offsetX = center.x - wxB*sc();
+    S.offsetY = center.y - wyB*sc();
+    updateZoomUI(); render();
+  }
+}
+
+function onTouchEnd(e) {
+  if (e.touches.length === 0) {
+    if (S.isDragging || S.isPanning) {
+      const t = Date.now() - touchStartTime;
+      if (t < 250 && !S.isDragging && !S.measureMode) {
+        S.selectedId = null; S.selectedType = null;
+        updateSelectedPanel(); render();
+      }
+    }
+    S.isPanning = false; S.isDragging = false;
+    updateSelectedPanel();
+  }
+}
+
+/* ================================================================
    INIT
    ================================================================ */
 function init(){
   canvas=document.getElementById('canvas');
   ctx=canvas.getContext('2d');
-  buildRoomTypeSelect(); buildFurnitureList();
+  applyLang();
   canvas.addEventListener('mousedown', onMouseDown);
   canvas.addEventListener('mousemove', onMouseMove);
   canvas.addEventListener('mouseup', onMouseUp);
   canvas.addEventListener('mouseleave', onMouseUp);
   canvas.addEventListener('wheel', onWheel, {passive:false});
   canvas.addEventListener('contextmenu', onContextMenu);
+  canvas.addEventListener('touchstart', onTouchStart, {passive: false});
+  canvas.addEventListener('touchmove', onTouchMove, {passive: false});
+  canvas.addEventListener('touchend', onTouchEnd, {passive: false});
   document.addEventListener('keydown', onKeyDown);
   window.addEventListener('resize', resizeCanvas);
   autoLoad();
