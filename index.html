@@ -521,8 +521,8 @@ const I18N = {
     f_single_sofa: 'Tekli Koltuk', f_double_sofa: 'Çiftli Koltuk', f_l_sofa: 'L Koltuk', f_tv_unit: 'TV Ünitesi',
     f_dining: 'Yemek Masası', f_work_desk: 'Çalışma Masası', f_coffee: 'Orta Sehpa', f_double_bed: 'Çift Yatak', f_single_bed: 'Tek Yatak', f_nightstand: 'Komodin',
     f_wardrobe: 'Gardırop', f_bookcase: 'Kitaplık', f_counter: 'Mutfak Tezgahı', f_fridge: 'Buzdolabı', f_oven: 'Ocak/Fırın', f_toilet: 'Klozet', f_sink: 'Lavabo', f_shower: 'Duşakabin',
-    f_door: 'Kapı', f_window: 'Pencere', f_column: 'Kolon', f_wall_seg: 'Duvar Bloğu',
-    wall_thickness: 'Duvar Kalınlığı',
+    f_door: 'Kapı', f_window: 'Pencere', f_column: 'Kolon', f_wall_seg: 'Duvar Bloğu', r_balcony: 'Balkon', f_plant: 'Bitki/Saksı', f_out_chair: 'Balkon Sandalyesi',
+    wall_thickness: 'Duvar Kalınlığı', dist_left: 'Sol Boşluk', dist_top: 'Üst Boşluk',
     status_zoom: 'Zoom: ', status_pos: 'Pozisyon: ', status_sel: 'Seçili: ', status_none: 'Yok', status_counts: 'Oda: %r · Eşya: %f',
     sel_measurement: 'Ölçüm', sel_distance: 'Mesafe', sel_name: 'İsim', sel_rot: 'Döndürme',
     btn_rotate: '🔄 Döndür', btn_delete: '🗑️ Sil', btn_dup: '📋 Kopyala', btn_done: '✅ Bitti / Onayla', btn_close: '✅ Kapat', btn_lock: '🔒 Kilitle', btn_unlock: '🔓 Kilidi Aç',
@@ -539,13 +539,13 @@ const I18N = {
     selected_item: 'Selected Item', empty_hint: 'Start by adding a room<br>from above, then place<br>furniture.',
     canvas_hint: '<kbd>Left Click</kbd> Select/Move · <kbd>Right Click</kbd> Pan · <kbd>Wheel</kbd> Zoom · <kbd>R</kbd> Rotate · <kbd>Del</kbd> Delete · <kbd>M</kbd> Measure',
     canvas_hint_mob: '👆 Tap: Select · ✋ Swipe: Pan · 🤏 Pinch: Zoom', measure_hint: '📏 Measure mode — Click two points to measure distance · <kbd style="background:rgba(255,255,255,0.25);border:none;color:#fff;font-size:10px;padding:1px 5px;border-radius:3px;">ESC</kbd> exit',
-    rt_living: 'Living Room', rt_bed: 'Bedroom', rt_kitchen: 'Kitchen', rt_bath: 'Bathroom', rt_office: 'Office', rt_hall: 'Hallway',
+    rt_living: 'Living Room', rt_bed: 'Bedroom', rt_kitchen: 'Kitchen', rt_bath: 'Bathroom', rt_office: 'Office', rt_hall: 'Hallway', r_balcony: 'Balcony',
     cat_seating: 'Seating', cat_tables: 'Tables', cat_beds: 'Beds', cat_storage: 'Storage', cat_kitchen: 'Kitchen', cat_bath: 'Bathroom', cat_build: 'Build',
     f_single_sofa: 'Armchair', f_double_sofa: 'Sofa', f_l_sofa: 'L-Sofa', f_tv_unit: 'TV Unit',
     f_dining: 'Dining Table', f_work_desk: 'Work Desk', f_coffee: 'Coffee Table', f_double_bed: 'Double Bed', f_single_bed: 'Single Bed', f_nightstand: 'Nightstand',
     f_wardrobe: 'Wardrobe', f_bookcase: 'Bookcase', f_counter: 'Counter', f_fridge: 'Fridge', f_oven: 'Oven', f_toilet: 'Toilet', f_sink: 'Sink', f_shower: 'Shower',
-    f_door: 'Door', f_window: 'Window', f_column: 'Column', f_wall_seg: 'Wall Block',
-    wall_thickness: 'Wall Thickness',
+    f_door: 'Door', f_window: 'Window', f_column: 'Column', f_wall_seg: 'Wall Block', f_plant: 'Plant', f_out_chair: 'Outdoor Chair',
+    wall_thickness: 'Wall Thickness', dist_left: 'Left Margin', dist_top: 'Top Margin',
     status_zoom: 'Zoom: ', status_pos: 'Pos: ', status_sel: 'Selected: ', status_none: 'None', status_counts: 'Room: %r · Item: %f',
     sel_measurement: 'Measurement', sel_distance: 'Distance', sel_name: 'Name', sel_rot: 'Rotation',
     btn_rotate: '🔄 Rotate', btn_delete: '🗑️ Delete', btn_dup: '📋 Duplicate', btn_done: '✅ Done', btn_close: '✅ Close', btn_lock: '🔒 Lock', btn_unlock: '🔓 Unlock',
@@ -599,7 +599,7 @@ const ROOM_TYPES = [
   { id:'cocuk',   i18n:'rt_living', name:'Çocuk Odası',   fill:'rgba(234,179,8,0.09)', stroke:'#ca8a04', icon:'🧸' },
   { id:'calisma', i18n:'rt_office', name:'Çalışma Odası', fill:'rgba(234,88,12,0.09)', stroke:'#ea580c', icon:'💼' },
   { id:'koridor', i18n:'rt_hall',   name:'Koridor/Hol',   fill:'rgba(0,0,0,0.03)',      stroke:'#78716c', icon:'🚶' },
-  { id:'balkon',  i18n:'rt_living', name:'Balkon',        fill:'rgba(22,163,74,0.07)', stroke:'#15803d', icon:'🌿' },
+  { id:'balkon',  i18n:'r_balcony', name:'Balkon',        fill:'rgba(168,162,158,0.15)', stroke:'#78716c', icon:'🌿' },
   { id:'ozel',    i18n:'rt_living', name:'Özel',          fill:'rgba(219,39,119,0.09)',stroke:'#db2777', icon:'✨' },
 ];
 
@@ -644,6 +644,8 @@ const FURN_LIB = [
   { id:'window_l',     i18n:'f_window',     name:'Pencere (1.5m)',  w:1.50, h:0.10, icon:'🪟', cat:'structure', color:'#0ea5e9' },
   { id:'column_sq',    i18n:'f_column',     name:'Kolon',           w:0.30, h:0.30, icon:'', cat:'structure', color:'#57534e' },
   { id:'wall_seg',     i18n:'f_wall_seg',   name:'Duvar Bloğu',     w:1.00, h:0.15, icon:'', cat:'structure', color:'#57534e' },
+  { id:'plant',        i18n:'f_plant',      name:'Bitki/Saksı',     w:0.40, h:0.40, icon:'🪴', cat:'living',    color:'#16a34a' },
+  { id:'out_chair',    i18n:'f_out_chair',  name:'Balkon Sandalyesi', w:0.55, h:0.55, icon:'🪑', cat:'living',    color:'#d97706' },
 ];
 
 /* ================================================================
@@ -662,6 +664,7 @@ const S = {
   measureStart: null, // {x, y} world coords
   measurements: [],   // [{id, x1, y1, x2, y2}, ...]
   snapPoint: null,    // current snap target for visual feedback
+  smartGuides: null,  // {left, right, top, bottom} for distance guidelines
   // undo
   undoStack: [], maxUndo: 40,
 };
@@ -727,7 +730,64 @@ function render() {
   drawSelection();
   drawMeasurements();
   drawMeasurePreview();
+  drawSmartGuides();
   ctx.restore();
+}
+
+/* ---------- SMART GUIDES ---------- */
+function drawSmartGuides() {
+  if (!S.isDragging || !S.smartGuides) return;
+  const item = getSelectedItem();
+  if (!item) return;
+  
+  const s = sc();
+  const fw = (item.angle === 90 || item.angle === 270) ? item.h : item.w;
+  const fh = (item.angle === 90 || item.angle === 270) ? item.w : item.h;
+  const cx = item.x + fw/2;
+  const cy = item.y + fh/2;
+  
+  ctx.strokeStyle = '#e25555';
+  ctx.fillStyle = '#e25555';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4,4]);
+  
+  function drawGuideLine(wx1, wy1, wx2, wy2, dist, isVert) {
+    if (dist < 0.01) return;
+    const sx1 = w2sX(wx1), sy1 = w2sY(wy1);
+    const sx2 = w2sX(wx2), sy2 = w2sY(wy2);
+    
+    ctx.beginPath();
+    ctx.moveTo(sx1, sy1);
+    ctx.lineTo(sx2, sy2);
+    ctx.stroke();
+    
+    // Label
+    const mx = (sx1 + sx2) / 2;
+    const my = (sy1 + sy2) / 2;
+    const label = Math.round(dist * 100) + ' cm';
+    
+    ctx.save();
+    ctx.font = '500 10px Inter';
+    ctx.translate(mx, my);
+    if (isVert) ctx.rotate(-Math.PI/2);
+    
+    const tw = ctx.measureText(label).width + 8;
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    roundRect(ctx, -tw/2, -8, tw, 16, 4);
+    ctx.fill();
+    ctx.fillStyle = '#c0392b';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(label, 0, 0.5);
+    ctx.restore();
+  }
+  
+  const g = S.smartGuides;
+  drawGuideLine(g.left.target, cy, item.x, cy, g.left.dist, false);
+  drawGuideLine(item.x + fw, cy, g.right.target, cy, g.right.dist, false);
+  drawGuideLine(cx, g.top.target, cx, item.y, g.top.dist, true);
+  drawGuideLine(cx, item.y + fh, cx, g.bottom.target, g.bottom.dist, true);
+  
+  ctx.setLineDash([]);
 }
 
 /* ---------- GRID ---------- */
@@ -1285,7 +1345,7 @@ function onMouseMove(e) {
 function onMouseUp(e) {
   const cur = S.measureMode ? 'crosshair' : (S.hoverItem ? (S.hoverItem.item.locked ? 'not-allowed' : 'grab') : 'default');
   if (S.isPanning) { S.isPanning = false; canvas.style.cursor = cur; }
-  if (S.isDragging) { S.isDragging = false; canvas.style.cursor = cur; updateSelectedPanel(); }
+  if (S.isDragging) { S.isDragging = false; S.smartGuides = null; canvas.style.cursor = cur; updateSelectedPanel(); render(); }
 }
 
 function onWheel(e) {
@@ -1453,7 +1513,21 @@ function updateSelectedPanel() {
     const wt = item.wallThickness || 0.15;
     h+=`<div class="form-row"><label>${t('wall_thickness')} (${unitLabel()})</label><input type="number" value="${toDisplay(wt)}" min="0.05" step="${S.unit==='cm'?1:0.05}" onchange="updateItemProp('wallThickness', this.value)" ${dis}/></div>`;
   }
-  if(!isRoom) h+=`<div class="form-row"><label>${t('sel_rot')}: ${item.angle||0}°</label></div>`;
+  if(!isRoom) {
+    h+=`<div class="form-row"><label>${t('sel_rot')}: ${item.angle||0}°</label></div>`;
+    const fw = (item.angle === 90 || item.angle === 270) ? item.h : item.w;
+    const fh = (item.angle === 90 || item.angle === 270) ? item.w : item.h;
+    const cx = item.x + fw/2;
+    const cy = item.y + fh/2;
+    const hoverRoom = S.rooms.find(r => cx >= r.x && cx <= r.x + r.w && cy >= r.y && cy <= r.y + r.h);
+    if (hoverRoom) {
+      const wt = (hoverRoom.wallThickness || 0.15) / 2;
+      const dLeft = Math.max(0, item.x - (hoverRoom.x + wt));
+      const dTop = Math.max(0, item.y - (hoverRoom.y + wt));
+      h+=`<div class="form-row-inline"><div class="form-row"><label>${t('dist_left')} (${unitLabel()})</label><input type="number" value="${toDisplay(dLeft)}" min="0" step="${S.unit==='cm'?1:0.05}" onchange="updateItemMargin('left',this.value)" ${dis}/></div>`;
+      h+=`<div class="form-row"><label>${t('dist_top')} (${unitLabel()})</label><input type="number" value="${toDisplay(dTop)}" min="0" step="${S.unit==='cm'?1:0.05}" onchange="updateItemMargin('top',this.value)" ${dis}/></div></div>`;
+    }
+  }
   h+=`<div class="sel-actions">`;
   h+=`<button class="btn" onclick="toggleLockSelected()">${item.locked?'🔓 '+t('btn_unlock').replace('🔓 ',''):'🔒 '+t('btn_lock').replace('🔒 ','')}</button>`;
   if(!isRoom) h+=`<button class="btn btn-accent" onclick="rotateSelected()" ${dis}>${t('btn_rotate')}</button>`;
@@ -1479,6 +1553,28 @@ function updateItemProp(prop, val) {
   pushUndo();
   if(prop==='name'){item.name=val;}
   else{const n=fromInput(val);if(n!==null)item[prop]=(prop==='x'||prop==='y')?n:Math.max(0.05,n);}
+  updateSelectedPanel(); render();
+}
+
+function updateItemMargin(side, val) {
+  const item=getSelectedItem(); if(!item || S.selectedType !== 'furniture') return;
+  const fw = (item.angle === 90 || item.angle === 270) ? item.h : item.w;
+  const fh = (item.angle === 90 || item.angle === 270) ? item.w : item.h;
+  const cx = item.x + fw/2;
+  const cy = item.y + fh/2;
+  const hoverRoom = S.rooms.find(r => cx >= r.x && cx <= r.x + r.w && cy >= r.y && cy <= r.y + r.h);
+  if (!hoverRoom) return;
+
+  const n = fromInput(val);
+  if (n === null) return;
+
+  pushUndo();
+  const wt = (hoverRoom.wallThickness || 0.15) / 2;
+  if (side === 'left') {
+    item.x = hoverRoom.x + wt + n;
+  } else if (side === 'top') {
+    item.y = hoverRoom.y + wt + n;
+  }
   updateSelectedPanel(); render();
 }
 
@@ -1715,6 +1811,55 @@ function applyItemDrag(item, targetX, targetY, mouseWorldX, mouseWorldY) {
   
   item.x = snap(tx);
   item.y = snap(ty);
+
+  S.smartGuides = null;
+  if (hoverRoom) {
+     const fw = (item.angle === 90 || item.angle === 270) ? item.h : item.w;
+     const fh = (item.angle === 90 || item.angle === 270) ? item.w : item.h;
+     const cx = item.x + fw/2;
+     const cy = item.y + fh/2;
+     const wt = (hoverRoom.wallThickness || 0.15) / 2;
+     
+     // 1. Duvarlara Olan Mesafe
+     let guides = {
+       left:  { dist: item.x - (hoverRoom.x + wt), target: hoverRoom.x + wt },
+       right: { dist: (hoverRoom.x + hoverRoom.w - wt) - (item.x + fw), target: hoverRoom.x + hoverRoom.w - wt },
+       top:   { dist: item.y - (hoverRoom.y + wt), target: hoverRoom.y + wt },
+       bottom:{ dist: (hoverRoom.y + hoverRoom.h - wt) - (item.y + fh), target: hoverRoom.y + hoverRoom.h - wt }
+     };
+
+     // 2. Diğer eşyalara (aynı oda içindeki veya çakışan) olan mesafe
+     S.furniture.forEach(other => {
+       if (other.id === item.id) return;
+       const ow = (other.angle === 90 || other.angle === 270) ? other.h : other.w;
+       const oh = (other.angle === 90 || other.angle === 270) ? other.w : other.h;
+       
+       // Y ekseninde çakışma varsa (Sol/Sağ hizalama)
+       if (item.y < other.y + oh && item.y + fh > other.y) {
+         if (other.x + ow <= item.x) { // Other is to the left
+           const d = item.x - (other.x + ow);
+           if (d < guides.left.dist) guides.left = { dist: d, target: other.x + ow };
+         }
+         if (other.x >= item.x + fw) { // Other is to the right
+           const d = other.x - (item.x + fw);
+           if (d < guides.right.dist) guides.right = { dist: d, target: other.x };
+         }
+       }
+       // X ekseninde çakışma varsa (Üst/Alt hizalama)
+       if (item.x < other.x + ow && item.x + fw > other.x) {
+         if (other.y + oh <= item.y) { // Other is above
+           const d = item.y - (other.y + oh);
+           if (d < guides.top.dist) guides.top = { dist: d, target: other.y + oh };
+         }
+         if (other.y >= item.y + fh) { // Other is below
+           const d = other.y - (item.y + fh);
+           if (d < guides.bottom.dist) guides.bottom = { dist: d, target: other.y };
+         }
+       }
+     });
+     
+     S.smartGuides = guides;
+  }
 }
 
 function getTouchDist(touches) {
@@ -1844,7 +1989,7 @@ function onTouchEnd(e) {
         updateSelectedPanel(); render();
       }
     }
-    S.isPanning = false; S.isDragging = false;
+    S.isPanning = false; S.isDragging = false; S.smartGuides = null;
     updateSelectedPanel();
   }
 }
