@@ -43,7 +43,7 @@ Tarayıcınızda doğrudan çalışır; kurulum, sunucu veya bağımlılık gere
 
 1. Projeyi klonlayın veya zip olarak indirin:
    ```bash
-   git clone https://github.com/KULLANICI_ADI/floor-planner.git
+   git clone https://github.com/furkanoktay-sevimli/floor-planner.git
    ```
 2. `index.html` dosyasını çift tıklayarak herhangi bir modern web tarayıcısında (Chrome, Edge, Firefox, Safari) açın.
 
