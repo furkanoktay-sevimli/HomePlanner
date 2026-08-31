@@ -521,7 +521,8 @@ const I18N = {
     f_single_sofa: 'Tekli Koltuk', f_double_sofa: 'Çiftli Koltuk', f_l_sofa: 'L Koltuk', f_tv_unit: 'TV Ünitesi',
     f_dining: 'Yemek Masası', f_work_desk: 'Çalışma Masası', f_coffee: 'Orta Sehpa', f_double_bed: 'Çift Yatak', f_single_bed: 'Tek Yatak', f_nightstand: 'Komodin',
     f_wardrobe: 'Gardırop', f_bookcase: 'Kitaplık', f_counter: 'Mutfak Tezgahı', f_fridge: 'Buzdolabı', f_oven: 'Ocak/Fırın', f_toilet: 'Klozet', f_sink: 'Lavabo', f_shower: 'Duşakabin',
-    f_door: 'Kapı', f_window: 'Pencere',
+    f_door: 'Kapı', f_window: 'Pencere', f_column: 'Kolon', f_wall_seg: 'Duvar Bloğu',
+    wall_thickness: 'Duvar Kalınlığı',
     status_zoom: 'Zoom: ', status_pos: 'Pozisyon: ', status_sel: 'Seçili: ', status_none: 'Yok', status_counts: 'Oda: %r · Eşya: %f',
     sel_measurement: 'Ölçüm', sel_distance: 'Mesafe', sel_name: 'İsim', sel_rot: 'Döndürme',
     btn_rotate: '🔄 Döndür', btn_delete: '🗑️ Sil', btn_dup: '📋 Kopyala', btn_done: '✅ Bitti / Onayla', btn_close: '✅ Kapat', btn_lock: '🔒 Kilitle', btn_unlock: '🔓 Kilidi Aç',
@@ -543,7 +544,8 @@ const I18N = {
     f_single_sofa: 'Armchair', f_double_sofa: 'Sofa', f_l_sofa: 'L-Sofa', f_tv_unit: 'TV Unit',
     f_dining: 'Dining Table', f_work_desk: 'Work Desk', f_coffee: 'Coffee Table', f_double_bed: 'Double Bed', f_single_bed: 'Single Bed', f_nightstand: 'Nightstand',
     f_wardrobe: 'Wardrobe', f_bookcase: 'Bookcase', f_counter: 'Counter', f_fridge: 'Fridge', f_oven: 'Oven', f_toilet: 'Toilet', f_sink: 'Sink', f_shower: 'Shower',
-    f_door: 'Door', f_window: 'Window',
+    f_door: 'Door', f_window: 'Window', f_column: 'Column', f_wall_seg: 'Wall Block',
+    wall_thickness: 'Wall Thickness',
     status_zoom: 'Zoom: ', status_pos: 'Pos: ', status_sel: 'Selected: ', status_none: 'None', status_counts: 'Room: %r · Item: %f',
     sel_measurement: 'Measurement', sel_distance: 'Distance', sel_name: 'Name', sel_rot: 'Rotation',
     btn_rotate: '🔄 Rotate', btn_delete: '🗑️ Delete', btn_dup: '📋 Duplicate', btn_done: '✅ Done', btn_close: '✅ Close', btn_lock: '🔒 Lock', btn_unlock: '🔓 Unlock',
@@ -640,6 +642,8 @@ const FURN_LIB = [
   { id:'door',         i18n:'f_door',       name:'Kapı (90cm)',     w:0.90, h:0.10, icon:'🚪', cat:'structure', color:'#78716c' },
   { id:'window_s',     i18n:'f_window',     name:'Pencere (1m)',    w:1.00, h:0.10, icon:'🪟', cat:'structure', color:'#0ea5e9' },
   { id:'window_l',     i18n:'f_window',     name:'Pencere (1.5m)',  w:1.50, h:0.10, icon:'🪟', cat:'structure', color:'#0ea5e9' },
+  { id:'column_sq',    i18n:'f_column',     name:'Kolon',           w:0.30, h:0.30, icon:'', cat:'structure', color:'#57534e' },
+  { id:'wall_seg',     i18n:'f_wall_seg',   name:'Duvar Bloğu',     w:1.00, h:0.15, icon:'', cat:'structure', color:'#57534e' },
 ];
 
 /* ================================================================
@@ -792,8 +796,9 @@ function drawRoom(r) {
   ctx.stroke();
   ctx.restore();
 
+  const wt = (r.wallThickness || 0.15) * s;
   ctx.strokeStyle = rt.stroke;
-  ctx.lineWidth = WALL_PX;
+  ctx.lineWidth = wt;
   ctx.strokeRect(x,y,w,h);
 
   const fs = Math.max(10, Math.min(16, s*0.3));
@@ -823,22 +828,33 @@ function drawFurn(f) {
   ctx.fillStyle = 'rgba(0,0,0,0.06)';
   roundRect(ctx,x+1.5,y+1.5,w,h,5); ctx.fill();
 
-  ctx.fillStyle = hexToRGBA(col, 0.15);
-  roundRect(ctx,x,y,w,h,5); ctx.fill();
-  ctx.strokeStyle = hexToRGBA(col, 0.65);
-  ctx.lineWidth = 1.5;
-  roundRect(ctx,x,y,w,h,5); ctx.stroke();
+  const isWallBlock = (f.libId === 'column_sq' || f.libId === 'wall_seg');
+  
+  if (isWallBlock) {
+    ctx.fillStyle = '#a8a29e';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = '#57534e';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, w, h);
+  } else {
+    ctx.fillStyle = hexToRGBA(col, 0.15);
+    roundRect(ctx,x,y,w,h,5); ctx.fill();
+    ctx.strokeStyle = hexToRGBA(col, 0.65);
+    ctx.lineWidth = 1.5;
+    roundRect(ctx,x,y,w,h,5); ctx.stroke();
+    
+    const is = Math.max(10, Math.min(22, Math.min(w,h)*0.55));
+    ctx.font = `${is}px sans-serif`;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(f.icon||'📦', x+w/2, y+h/2-(h>30?6:0));
+  }
 
-  const is = Math.max(10, Math.min(22, Math.min(w,h)*0.55));
-  ctx.font = `${is}px sans-serif`;
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText(f.icon||'📦', x+w/2, y+h/2-(h>30?6:0));
-
-  if (w>30 && h>20) {
+  if (!isWallBlock && w>30 && h>20) {
     const ls = Math.max(7, Math.min(11, s*0.18));
     ctx.font = `500 ${ls}px Inter`;
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.textAlign='center'; ctx.textBaseline='top';
+    const is = Math.max(10, Math.min(22, Math.min(w,h)*0.55));
     const ly = y+h/2+(h>30?5:is/2+2);
     if (ly+ls < y+h-2) ctx.fillText(f.name, x+w/2, ly);
   }
@@ -1248,7 +1264,7 @@ function onMouseMove(e) {
 
   if (S.isDragging && S.selectedId) {
     const item = getSelectedItem();
-    if (item) { item.x = snap(wx-S.dragOX); item.y = snap(wy-S.dragOY); render(); }
+    if (item) { applyItemDrag(item, wx-S.dragOX, wy-S.dragOY, wx, wy); render(); }
     updateStatusPos(); return;
   }
 
@@ -1433,6 +1449,10 @@ function updateSelectedPanel() {
   h+=`<div class="form-row"><label>${t('height')} (${unitLabel()})</label><input type="number" value="${toDisplay(item.h)}" min="1" step="${S.unit==='cm'?1:0.05}" onchange="updateItemProp('h',this.value)" ${dis}/></div></div>`;
   h+=`<div class="form-row-inline"><div class="form-row"><label>X (${unitLabel()})</label><input type="number" value="${toDisplay(item.x)}" step="${S.unit==='cm'?1:0.05}" onchange="updateItemProp('x',this.value)" ${dis}/></div>`;
   h+=`<div class="form-row"><label>Y (${unitLabel()})</label><input type="number" value="${toDisplay(item.y)}" step="${S.unit==='cm'?1:0.05}" onchange="updateItemProp('y',this.value)" ${dis}/></div></div>`;
+  if(isRoom) {
+    const wt = item.wallThickness || 0.15;
+    h+=`<div class="form-row"><label>${t('wall_thickness')} (${unitLabel()})</label><input type="number" value="${toDisplay(wt)}" min="0.05" step="${S.unit==='cm'?1:0.05}" onchange="updateItemProp('wallThickness', this.value)" ${dis}/></div>`;
+  }
   if(!isRoom) h+=`<div class="form-row"><label>${t('sel_rot')}: ${item.angle||0}°</label></div>`;
   h+=`<div class="sel-actions">`;
   h+=`<button class="btn" onclick="toggleLockSelected()">${item.locked?'🔓 '+t('btn_unlock').replace('🔓 ',''):'🔒 '+t('btn_lock').replace('🔒 ','')}</button>`;
@@ -1662,6 +1682,41 @@ let touchStartPos = {x:0, y:0};
 let initialPinchDist = null;
 let initialPinchZoom = null;
 
+function applyItemDrag(item, targetX, targetY, mouseWorldX, mouseWorldY) {
+  if (S.selectedType !== 'furniture') {
+    item.x = snap(targetX); item.y = snap(targetY);
+    return;
+  }
+  
+  // Bulunduğumuz odayı tespit et (farenin konumuna göre)
+  const hoverRoom = S.rooms.find(r => mouseWorldX >= r.x && mouseWorldX <= r.x + r.w && mouseWorldY >= r.y && mouseWorldY <= r.y + r.h);
+  
+  let tx = targetX;
+  let ty = targetY;
+  
+  if (hoverRoom) {
+     const wt = (hoverRoom.wallThickness || 0.15) / 2;
+     const fw = (item.angle === 90 || item.angle === 270) ? item.h : item.w;
+     const fh = (item.angle === 90 || item.angle === 270) ? item.w : item.h;
+     const minX = hoverRoom.x + wt;
+     const minY = hoverRoom.y + wt;
+     const maxX = hoverRoom.x + hoverRoom.w - wt - fw;
+     const maxY = hoverRoom.y + hoverRoom.h - wt - fh;
+     
+     if (maxX >= minX) {
+       if (tx < minX) { tx = minX; S.dragOX = mouseWorldX - tx; }
+       else if (tx > maxX) { tx = maxX; S.dragOX = mouseWorldX - tx; }
+     }
+     if (maxY >= minY) {
+       if (ty < minY) { ty = minY; S.dragOY = mouseWorldY - ty; }
+       else if (ty > maxY) { ty = maxY; S.dragOY = mouseWorldY - ty; }
+     }
+  }
+  
+  item.x = snap(tx);
+  item.y = snap(ty);
+}
+
 function getTouchDist(touches) {
   return Math.hypot(touches[0].clientX - touches[1].clientX, touches[0].clientY - touches[1].clientY);
 }
@@ -1759,7 +1814,7 @@ function onTouchMove(e) {
     
     if (S.isDragging && S.selectedId) {
       const item = getSelectedItem();
-      if (item) { item.x = snap(wx-S.dragOX); item.y = snap(wy-S.dragOY); render(); }
+      if (item) { applyItemDrag(item, wx-S.dragOX, wy-S.dragOY, wx, wy); render(); }
       return;
     }
     
